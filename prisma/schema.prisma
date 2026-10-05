@@ -1,0 +1,155 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum StatusAgendamento {
+  PENDENTE
+  CONFIRMADO
+  CANCELADO
+  CONCLUIDO
+}
+
+model Estabelecimento {
+  id                String   @id @default(uuid())
+  slug              String   @unique
+  name              String
+  description       String   @default("")
+  telefone          String   @default("")
+  email             String   @default("")
+  cnpj              String   @default("")
+  endereco          String   @default("")
+  cidade            String   @default("")
+  estado            String   @default("")
+  cep               String   @default("")
+  logoUrl           String?
+  banner            String?
+  primaryColor      String   @default("#000000")
+  secondaryColor    String   @default("#e94560")
+  welcomeMessage    String   @default("")
+  instagram         String   @default("")
+  facebook          String   @default("")
+  whatsapp          String   @default("")
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  proprietarioId    String
+
+  proprietario Proprietario @relation(fields: [proprietarioId], references: [id], onDelete: Cascade)
+
+  servicos      Servico[]
+  profissionais Profissional[]
+  agendamentos Agendamento[]
+  horarios      HorarioFuncionamento[]
+
+  @@index([slug])
+}
+
+model Proprietario {
+  id           String   @id @default(uuid())
+  name         String
+  telefone     String   @unique
+  email        String   @unique
+  passwordHash String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  estabelecimentos Estabelecimento[]
+}
+
+model Cliente {
+  id           String   @id @default(uuid())
+  nome         String
+  email        String   @unique
+  telefone     String
+  passwordHash String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  agendamentos Agendamento[]
+}
+
+model Servico {
+  id                String   @id @default(uuid())
+  nome              String
+  descricao         String?
+  preco             Decimal  @db.Decimal(10, 2)
+  duracao          Int
+  ativo            Boolean  @default(true)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  estabelecimentoId String
+
+  estabelecimento Estabelecimento @relation(fields: [estabelecimentoId], references: [id], onDelete: Cascade)
+  agendamentos   Agendamento[]
+  profissionais  Profissional[]
+
+  @@index([estabelecimentoId])
+}
+
+model Profissional {
+  id                String   @id @default(uuid())
+  nome              String
+  telefone          String   @default("")
+  email             String   @default("")
+  fotoUrl           String?
+  ativo             Boolean  @default(true)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  estabelecimentoId String
+
+  estabelecimento Estabelecimento @relation(fields: [estabelecimentoId], references: [id], onDelete: Cascade)
+  agendamentos   Agendamento[]
+  servicos       Servico[]
+
+  @@index([estabelecimentoId])
+}
+
+model HorarioFuncionamento {
+  id                String   @id @default(uuid())
+  dia               String
+  ativo             Boolean  @default(false)
+  abertura          String   @default("09:00")
+  fechamento        String   @default("18:00")
+  almocoInicio      String?
+  almocoFim         String?
+  estabelecimentoId String
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  estabelecimento Estabelecimento @relation(fields: [estabelecimentoId], references: [id], onDelete: Cascade)
+
+  @@unique([estabelecimentoId, dia])
+  @@index([estabelecimentoId])
+}
+
+model Agendamento {
+  id                String            @id @default(uuid())
+  clienteNome       String
+  clienteFone       String
+  clienteEmail      String?
+  clienteId         String?
+  descricao         String?
+  dataHora          DateTime
+  preco             Decimal           @db.Decimal(10, 2)
+  status            StatusAgendamento @default(PENDENTE)
+  observacoes       String?
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+  estabelecimentoId String
+  servicoId         String
+  profissionalId    String
+
+  estabelecimento Estabelecimento @relation(fields: [estabelecimentoId], references: [id], onDelete: Cascade)
+  servico         Servico         @relation(fields: [servicoId], references: [id], onDelete: Restrict)
+  profissional    Profissional    @relation(fields: [profissionalId], references: [id], onDelete: Restrict)
+  cliente         Cliente?        @relation(fields: [clienteId], references: [id], onDelete: SetNull)
+
+  @@index([profissionalId, dataHora])
+  @@index([estabelecimentoId, dataHora])
+  @@index([clienteId])
+  @@index([status])
+}
