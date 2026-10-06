@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { getPrisma } from "@/lib/prisma";
 import { getCurrentSession } from "@/lib/session";
 
 export async function POST(request: Request) {
@@ -39,6 +39,7 @@ export async function POST(request: Request) {
       );
     }
 
+    const prisma = getPrisma();
     const [estabelecimento, profissional, servico] = await Promise.all([
       prisma.estabelecimento.findUnique({ where: { id: estabelecimentoId } }),
       prisma.profissional.findUnique({ where: { id: profissionalId } }),

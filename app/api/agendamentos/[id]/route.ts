@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { getPrisma } from "@/lib/prisma";
 import { getCurrentOwner } from "@/lib/owner";
 import { getCurrentSession } from "@/lib/session";
 
@@ -22,6 +22,7 @@ export async function PATCH(
       return NextResponse.json({ error: "Sessão expirada." }, { status: 401 });
     }
 
+    const prisma = getPrisma();
     const body = await request.json();
     const status = body?.status;
 
@@ -70,6 +71,7 @@ export async function DELETE(
       return NextResponse.json({ error: "Sessão expirada." }, { status: 401 });
     }
 
+    const prisma = getPrisma();
     const agendamento = await prisma.agendamento.findUnique({
       where: { id },
       include: { estabelecimento: true },
@@ -101,6 +103,7 @@ export async function GET(
     return NextResponse.json({ error: "Entre na sua conta para consultar agendamentos." }, { status: 401 });
   }
 
+  const prisma = getPrisma();
   const { id } = await params;
   const agendamento = await prisma.agendamento.findFirst({
     where: session.type === "cliente"

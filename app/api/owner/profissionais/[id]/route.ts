@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getCurrentOwner } from "@/lib/owner";
-import { prisma } from "@/lib/prisma";
+import { getPrisma } from "@/lib/prisma";
 
 interface Context {
   params: Promise<{ id: string }>;
@@ -15,6 +15,7 @@ export async function PATCH(request: Request, { params }: Context) {
 
   try {
     const { id } = await params;
+    const prisma = getPrisma();
     const profissionalExistente = await prisma.profissional.findFirst({ where: { id, estabelecimentoId } });
     if (!profissionalExistente) {
       return NextResponse.json({ error: "Funcionário não encontrado." }, { status: 404 });
@@ -56,6 +57,7 @@ export async function DELETE(_request: Request, { params }: Context) {
   }
 
   const { id } = await params;
+  const prisma = getPrisma();
   const profissional = await prisma.profissional.findFirst({ where: { id, estabelecimentoId } });
   if (!profissional) return NextResponse.json({ error: "Funcionário não encontrado." }, { status: 404 });
 

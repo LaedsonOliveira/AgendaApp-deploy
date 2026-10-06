@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getCurrentOwner } from "@/lib/owner";
-import { prisma } from "@/lib/prisma";
+import { getPrisma } from "@/lib/prisma";
 
 interface Context {
   params: Promise<{ id: string }>;
@@ -15,6 +15,7 @@ export async function PATCH(request: Request, { params }: Context) {
 
   try {
     const { id } = await params;
+    const prisma = getPrisma();
     const atual = await prisma.servico.findFirst({ where: { id, estabelecimentoId } });
     if (!atual) return NextResponse.json({ error: "Serviço não encontrado." }, { status: 404 });
 
@@ -71,6 +72,7 @@ export async function DELETE(_request: Request, { params }: Context) {
   }
 
   const { id } = await params;
+  const prisma = getPrisma();
   const servico = await prisma.servico.findFirst({ where: { id, estabelecimentoId } });
   if (!servico) return NextResponse.json({ error: "Serviço não encontrado." }, { status: 404 });
 

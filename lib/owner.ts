@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/prisma";
+import { getPrisma } from "@/lib/prisma";
 import { hashPassword, verifyPassword } from "@/lib/password";
 
 const slugify = (value: string) =>
@@ -12,6 +12,7 @@ const slugify = (value: string) =>
     .replace(/-+/g, "-");
 
 const buildUniqueSlug = async (base: string) => {
+  const prisma = getPrisma();
   const safeBase = slugify(base) || "meu-negocio";
   let slug = safeBase;
   let counter = 1;
@@ -41,6 +42,7 @@ export async function createOwnerWithEstabelecimento(input: {
     throw new Error("Nome, e-mail, telefone e senha com pelo menos 8 caracteres são obrigatórios.");
   }
 
+  const prisma = getPrisma();
   const existingOwner = await prisma.proprietario.findFirst({
     where: {
       OR: [{ email }, { telefone }],
@@ -79,6 +81,7 @@ export async function authenticateOwnerByCredentials(input: {
   email: string;
   password: string;
 }) {
+  const prisma = getPrisma();
   const email = input.email.trim().toLowerCase();
 
   const owner = await prisma.proprietario.findUnique({
@@ -99,6 +102,7 @@ export async function getCurrentOwner() {
 
   if (!ownerId) return null;
 
+  const prisma = getPrisma();
   return prisma.proprietario.findUnique({
     where: { id: ownerId },
     include: {
@@ -108,6 +112,7 @@ export async function getCurrentOwner() {
 }
 
 export async function getEstabelecimentoBySlug(slug: string) {
+  const prisma = getPrisma();
   return prisma.estabelecimento.findUnique({
     where: { slug },
     include: {
@@ -131,6 +136,7 @@ export async function getEstabelecimentoBySlug(slug: string) {
 }
 
 export async function getPublicEstabelecimentoBySlug(slug: string) {
+  const prisma = getPrisma();
   return prisma.estabelecimento.findUnique({
     where: { slug },
     select: {
@@ -168,6 +174,7 @@ export async function getPublicEstabelecimentoBySlug(slug: string) {
 }
 
 export async function getPublicEstabelecimentos() {
+  const prisma = getPrisma();
   return prisma.estabelecimento.findMany({
     orderBy: { name: "asc" },
     select: {
@@ -181,6 +188,7 @@ export async function getPublicEstabelecimentos() {
 }
 
 export async function getEstabelecimentoByOwner(ownerId: string) {
+  const prisma = getPrisma();
   return prisma.estabelecimento.findFirst({
     where: { proprietarioId: ownerId },
     include: {

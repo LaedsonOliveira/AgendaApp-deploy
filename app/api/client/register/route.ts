@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { getPrisma } from "@/lib/prisma";
 import { hashPassword } from "@/lib/password";
 
 export async function POST(request: Request) {
@@ -23,6 +23,7 @@ export async function POST(request: Request) {
       );
     }
 
+    const prisma = getPrisma();
     const cliente = await prisma.cliente.create({
       data: {
         nome: nome.trim(),

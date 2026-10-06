@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { getPrisma } from "@/lib/prisma";
 import { getCurrentSession } from "@/lib/session";
 
 export async function GET() {
@@ -8,6 +8,7 @@ export async function GET() {
     return NextResponse.json({ error: "Entre na sua conta para consultar agendamentos." }, { status: 401 });
   }
 
+  const prisma = getPrisma();
   const agendamentos = await prisma.agendamento.findMany({
     where: session.type === "cliente"
       ? { clienteId: session.id }

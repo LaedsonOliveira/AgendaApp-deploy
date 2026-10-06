@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getCurrentOwner } from "@/lib/owner";
-import { prisma } from "@/lib/prisma";
+import { getPrisma } from "@/lib/prisma";
 
 export async function GET() {
   const owner = await getCurrentOwner();
@@ -10,6 +10,7 @@ export async function GET() {
   }
 
   const estabelecimentoAtual = owner.estabelecimentos[0];
+  const prisma = getPrisma();
   const estabelecimento = estabelecimentoAtual
     ? await prisma.estabelecimento.findUnique({
         where: { id: estabelecimentoAtual.id },
@@ -129,6 +130,7 @@ export async function PATCH(request: Request) {
       return NextResponse.json({ error: "Nenhuma alteração informada." }, { status: 400 });
     }
 
+    const prisma = getPrisma();
     const updated = await prisma.estabelecimento.update({
       where: { id: estabelecimento.id },
       data,

@@ -8,10 +8,11 @@
     "build:cloudflare": "opennextjs-cloudflare build",
     "start": "next start",
     "lint": "eslint",
+
     "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
+
     "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
-    "deploy:cloudflare": "opennextjs-cloudflare deploy",
-    "upload": "opennextjs-cloudflare build && opennextjs-cloudflare upload",
+
     "db:generate": "prisma generate",
     "db:push": "prisma db push",
     "db:migrate": "prisma migrate dev",
@@ -24,6 +25,7 @@
     "@fullcalendar/mui": "^7.0.2",
     "@fullcalendar/react": "^7.0.2",
     "@prisma/client": "^6.19.3",
+    "@prisma/adapter-neon": "6.19.3",
     "date-fns": "^4.4.0",
     "dotenv": "^18.0.4",
     "next": "16.3.8",

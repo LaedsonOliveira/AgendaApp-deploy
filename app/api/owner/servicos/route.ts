@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getCurrentOwner } from "@/lib/owner";
-import { prisma } from "@/lib/prisma";
+import { getPrisma } from "@/lib/prisma";
 
 export async function POST(request: Request) {
   const owner = await getCurrentOwner();
@@ -24,6 +24,7 @@ export async function POST(request: Request) {
     }
 
     const profissionalIds: string[] = barbeiros ?? [];
+    const prisma = getPrisma();
     const profissionais = await prisma.profissional.findMany({
       where: { id: { in: profissionalIds }, estabelecimentoId },
       select: { id: true },

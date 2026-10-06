@@ -1,10 +1,13 @@
 import { cookies } from "next/headers";
-import { prisma } from "@/lib/prisma";
+import { getPrisma } from "@/lib/prisma";
 
 export async function getCurrentSession() {
   const cookieStore = await cookies();
   const ownerId = cookieStore.get("barbearia_owner_id")?.value;
   const clientId = cookieStore.get("barbearia_cliente_id")?.value;
+  if (!ownerId && !clientId) return null;
+
+  const prisma = getPrisma();
 
   if (ownerId) {
     const owner = await prisma.proprietario.findUnique({

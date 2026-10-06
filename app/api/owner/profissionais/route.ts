@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getCurrentOwner } from "@/lib/owner";
-import { prisma } from "@/lib/prisma";
+import { getPrisma } from "@/lib/prisma";
 
 export async function POST(request: Request) {
   const owner = await getCurrentOwner();
@@ -22,6 +22,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Confira os dados do funcionário." }, { status: 400 });
     }
 
+    const prisma = getPrisma();
     const profissional = await prisma.profissional.create({
       data: {
         nome: nome.trim(),

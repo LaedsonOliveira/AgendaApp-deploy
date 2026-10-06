@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { getPrisma } from "@/lib/prisma";
 import { verifyPassword } from "@/lib/password";
 
 export async function POST(request: Request) {
@@ -11,6 +11,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Informe e-mail e senha." }, { status: 400 });
     }
 
+    const prisma = getPrisma();
     const cliente = await prisma.cliente.findUnique({
       where: { email: email.trim().toLowerCase() },
     });

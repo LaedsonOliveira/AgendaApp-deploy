@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { authenticateOwnerByCredentials } from "@/lib/owner";
 import { verifyPassword } from "@/lib/password";
-import { prisma } from "@/lib/prisma";
+import { getPrisma } from "@/lib/prisma";
 
 export async function POST(request: Request) {
   try {
@@ -34,6 +34,7 @@ export async function POST(request: Request) {
       return response;
     }
 
+    const prisma = getPrisma();
     const client = await prisma.cliente.findUnique({ where: { email: normalizedEmail } });
     if (!client || !(await verifyPassword(password, client.passwordHash))) {
       return NextResponse.json({ error: "E-mail ou senha inválidos." }, { status: 401 });

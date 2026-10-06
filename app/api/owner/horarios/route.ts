@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getCurrentOwner } from "@/lib/owner";
-import { prisma } from "@/lib/prisma";
+import { getPrisma } from "@/lib/prisma";
 
 const diasValidos = new Set([
   "segunda",
@@ -42,6 +42,7 @@ export async function PATCH(request: Request) {
       diasRecebidos.add(horario.dia);
     }
 
+    const prisma = getPrisma();
     const salvos = await prisma.$transaction(
       horarios.map((horario) => prisma.horarioFuncionamento.upsert({
         where: {
